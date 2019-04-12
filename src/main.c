@@ -20,5 +20,6 @@ int main(int argc, char **argv) {
   }
   help();
   NICKNAMEOPTION nickNameOption = NICKNAMEOPTION_DEFAULT;
+  nickNameOption.allowNumber = true;
   getNickName(&nickNameOption);
 }

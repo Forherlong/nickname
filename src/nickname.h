@@ -7,6 +7,7 @@ typedef struct _NICKNAMEOPTION {
   bool allowUpperChar;
   bool allowNumber;
   bool allowSymbool;
+  bool saveToFile;
 } NICKNAMEOPTION;
 extern const NICKNAMEOPTION NICKNAMEOPTION_DEFAULT;
 char* getNickName(NICKNAMEOPTION*);
