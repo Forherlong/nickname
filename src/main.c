@@ -2,7 +2,11 @@
 #include <stdlib.h>
 #include "nickname.h"
 
+/* flag array length */
+#define FLAG_VAR_ARRAY_LEN 3
+
 const char* welcomeWords = "\t*** Welcome to nickname ! ***\n";
+const char* constYesOrNo = " [y/N] ";
 
 void help() {
   printf("usage:\n");
@@ -24,7 +28,42 @@ void getInput(char* str, int length) {
     oneChar = getchar();
     str[len] = oneChar;
     ++len;
+    /* todo: check if input char qualified */
   } while (oneChar != '\n' && len < length);
+}
+
+void askForOption(NICKNAMEOPTION* nickNameOption) {
+  char upper[FLAG_VAR_ARRAY_LEN], number[FLAG_VAR_ARRAY_LEN],
+      symbol[FLAG_VAR_ARRAY_LEN], nicknameLength[FLAG_VAR_ARRAY_LEN],
+      numberOfNickname[FLAG_VAR_ARRAY_LEN], saveToFile[FLAG_VAR_ARRAY_LEN];
+
+  printf("\n");
+  printf("%s\n", welcomeWords);
+
+  printf("Do you want uppercase letters?%s", constYesOrNo);
+  fflush(stdout);
+  getInput(upper, FLAG_VAR_ARRAY_LEN);
+
+  printf("Do you want number?%s", constYesOrNo);
+  fflush(stdout);
+  getInput(number, FLAG_VAR_ARRAY_LEN);
+
+  printf("Do you want symbol(!@#$^&*+_-./)?%s", constYesOrNo);
+  fflush(stdout);
+  getInput(symbol, FLAG_VAR_ARRAY_LEN);
+
+  printf("How long do you want a nickname?%s", constYesOrNo);
+  fflush(stdout);
+  getInput(nicknameLength, FLAG_VAR_ARRAY_LEN);
+
+  printf("How many nicknames do you want? [default %d] ",
+         nickNameOption->numberOfNickname);
+  fflush(stdout);
+  getInput(numberOfNickname, FLAG_VAR_ARRAY_LEN);
+
+  printf("Do you want to save nicknames to file? [default NO] ");
+  fflush(stdout);
+  getInput(saveToFile, FLAG_VAR_ARRAY_LEN);
 }
 
 int main(int argc, char** argv) {
@@ -33,24 +72,9 @@ int main(int argc, char** argv) {
 
   } else {
     /* 1. ask for option 2. define option params 3. invoke getNickname() */
-    printf("\n");
-    printf("%s\n", welcomeWords);
-    char number[3], symbol[3], upper[3];
-    printf("Do you want uppercase letters?" " [y/N] ");
-    fflush(stdout);
-    getInput(upper, 3);
-    printf("Do you want number?" " [y/N] ");
-    fflush(stdout);
-    getInput(number, 3);
-    printf("Do you want uppercase symbol(!@#$^&*+_-./)?" " [y/N] ");
-    fflush(stdout);
-    getInput(symbol, 3);
-
-    // printf("%s %s %s", upper, number, symbol);
+    NICKNAMEOPTION nickNameOption = NICKNAMEOPTION_DEFAULT;
+    askForOption(&nickNameOption);
+    getNickName(&nickNameOption);
     fflush(stdout);
   }
-
-  NICKNAMEOPTION nickNameOption = NICKNAMEOPTION_DEFAULT;
-  nickNameOption.allowNumber = true;
-  getNickName(&nickNameOption);
 }
