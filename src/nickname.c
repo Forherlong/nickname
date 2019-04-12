@@ -17,6 +17,7 @@ const NICKNAMEOPTION NICKNAMEOPTION_DEFAULT = {.nicknameLength = 8,
 /* len [out]
    str1 [in]
    str2 [in]
+   concatenate str1 and str2 then return, len is return string's length
  */
 char* concatenateString(int* len, const char* str1, const char* str2) {
   int len1 = 0, len2 = 0, len3 = 0;

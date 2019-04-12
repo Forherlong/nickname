@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "nickname.h"
 
+const char* welcomeWords = "\t*** Welcome to nickname ! ***\n";
+
 void help() {
   printf("usage:\n");
   printf("\t-n: need number,default no number\n");
@@ -13,12 +15,41 @@ void help() {
   printf("\t-f: save result to file\n");
 }
 
-int main(int argc, char **argv) {
-  printf("hello, world.\n");
-  for (int i = 0; i < argc; ++i) {
-    printf("i = %d, value = %s\n", i, *argv++);
+bool isWithFlagValue(int argc) { return argc >= 2; }
+
+void getInput(char* str, int length) {
+  int len = 0;
+  int oneChar;
+  do {
+    oneChar = getchar();
+    str[len] = oneChar;
+    ++len;
+  } while (oneChar != '\n' && len < length);
+}
+
+int main(int argc, char** argv) {
+  if (isWithFlagValue(argc)) {
+    /* 1. parse flag value. 2. define option params 3. invoke getNickname() */
+
+  } else {
+    /* 1. ask for option 2. define option params 3. invoke getNickname() */
+    printf("\n");
+    printf("%s\n", welcomeWords);
+    char number[3], symbol[3], upper[3];
+    printf("Do you want uppercase letters?" " [y/N] ");
+    fflush(stdout);
+    getInput(upper, 3);
+    printf("Do you want number?" " [y/N] ");
+    fflush(stdout);
+    getInput(number, 3);
+    printf("Do you want uppercase symbol(!@#$^&*+_-./)?" " [y/N] ");
+    fflush(stdout);
+    getInput(symbol, 3);
+
+    // printf("%s %s %s", upper, number, symbol);
+    fflush(stdout);
   }
-  help();
+
   NICKNAMEOPTION nickNameOption = NICKNAMEOPTION_DEFAULT;
   nickNameOption.allowNumber = true;
   getNickName(&nickNameOption);
