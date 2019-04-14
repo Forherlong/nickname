@@ -6,7 +6,8 @@
 /* flag array length */
 #define FLAG_VAR_ARRAY_LEN 3
 
-const char *welcomeWords = "\t*** Welcome to nickname ! ***\n";
+const char *welcomeWords = "\n\n\t*** Welcome to nickname ! ***\n";
+const char *warnningWords = "\n*If input is illegal, program will repalce it with default value.*\n";
 const char *constYesOrNo = " [y/N] ";
 
 void help()
@@ -32,7 +33,6 @@ void getInput(char *str, int length)
     oneChar = getchar();
     str[len] = oneChar;
     ++len;
-    /* todo: check if input char qualified */
   } while (oneChar != '\n' && len < length);
 }
 
@@ -63,7 +63,7 @@ bool parseYesOrNo(const char *str)
   bool ret = false;
   char *lowercaseStr = toLowercase(str);
   int strLen = sizeof(lowercaseStr) / sizeof(char);
-  if (strcmp(lowercaseStr, "yes") == 0 || strcmp(lowercaseStr, "y") == 0 || strcmp(lowercaseStr, "\n") == 0)
+  if (strcmp(lowercaseStr, "yes\n") == 0 || strcmp(lowercaseStr, "y\n") == 0 || strcmp(lowercaseStr, "\n") == 0)
   {
     ret = true;
   }
@@ -71,17 +71,46 @@ bool parseYesOrNo(const char *str)
   return ret;
 }
 
-int parseNumber(char *str)
+bool parseNumber(const char *str, double *num)
 {
-  /* todo: return number */
+  bool ret = false;
+  double tempNum = 1;
+  int place = 1;
+  int strLen = sizeof(str) / sizeof(char);
+  while (*str != '\0')
+    ++str;
+
+  for (int i = strLen; i >= 0; --i)
+  {
+    if (*str >= 48 && *str <= 57)
+    {
+      tempNum = tempNum + place * *str;
+      *num = tempNum;
+    }
+    else if (*str == '\n')
+    {
+      ret = true;
+      return ret;
+    }
+    else
+    {
+      ret = false;
+      return ret;
+    }
+    ++str;
+    ++place;
+  }
+  ret = true;
+  return ret;
 }
 
-void printOption(NICKNAMEOPTION *nicknameOption) {
-  printf("number : %d\n", nicknameOption->allowNumber);
+void printOption(NICKNAMEOPTION *nicknameOption)
+{
   printf("uppercase : %d\n", nicknameOption->allowUpperChar);
+  printf("number : %d\n", nicknameOption->allowNumber);
   printf("symbol : %d\n", nicknameOption->allowSymbool);
   printf("nickname length : %d\n", nicknameOption->nicknameLength);
-
+  printf("number of nicknames : %d\n", nicknameOption->numberOfNickname);
 }
 
 void askForOption(NICKNAMEOPTION *nicknameOption)
@@ -90,8 +119,8 @@ void askForOption(NICKNAMEOPTION *nicknameOption)
       symbol[FLAG_VAR_ARRAY_LEN], nicknameLength[FLAG_VAR_ARRAY_LEN],
       numberOfNickname[FLAG_VAR_ARRAY_LEN], saveToFile[FLAG_VAR_ARRAY_LEN];
 
-  printf("\n");
   printf("%s\n", welcomeWords);
+  printf("%s\n", warnningWords);
 
   printf("Do you want uppercase letters?%s", constYesOrNo);
   fflush(stdout);
@@ -105,12 +134,11 @@ void askForOption(NICKNAMEOPTION *nicknameOption)
   fflush(stdout);
   getInput(symbol, FLAG_VAR_ARRAY_LEN);
 
-  printf("How long do you want a nickname?%s", constYesOrNo);
+  printf("How long do you want a nickname? [1~50] ");
   fflush(stdout);
   getInput(nicknameLength, FLAG_VAR_ARRAY_LEN);
 
-  printf("How many nicknames do you want? [default %d] ",
-         nicknameOption->numberOfNickname);
+  printf("How many nicknames do you want? [1~100000] ");
   fflush(stdout);
   getInput(numberOfNickname, FLAG_VAR_ARRAY_LEN);
 
@@ -124,8 +152,17 @@ void askForOption(NICKNAMEOPTION *nicknameOption)
   nicknameOption->allowSymbool = parseYesOrNo(symbol);
   nicknameOption->saveToFile = parseYesOrNo(saveToFile);
 
-  /* nicknameOption->nicknameLength = parseNumber(nicknameLength);
-  nicknameOption->numberOfNickname = parseNumber(numberOfNickname); */
+  double nicknameLength_ = nicknameOption->nicknameLength;
+  if (parseNumber(nicknameLength, &nicknameLength_))
+  {
+    nicknameOption->nicknameLength = nicknameLength_;
+  }
+
+  double numberOfNickname_ = nicknameOption->numberOfNickname;
+  if (parseNumber(numberOfNickname, &numberOfNickname_))
+  {
+    nicknameOption->numberOfNickname = numberOfNickname_;
+  }
 }
 
 int main(int argc, char **argv)
