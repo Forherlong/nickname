@@ -36,24 +36,22 @@ void getInput(char *str, int length) {
 
 char *toLowercase(const char *str) {
   int strLen = strlen(str);
-  char *ret = (char *)malloc(sizeof(char) * strLen); /* todo: free memory */
-  printf("%d\n", strLen);
-  for (int i = 0; i < strLen - 1; ++i, ++str) {
+  char *ret =
+      (char *)malloc(sizeof(char) * (strLen + 1)); /* todo: free memory */
+  for (int i = 0; i < strLen; ++i, ++str) {
     if (*str <= 'Z' && *str >= 'A') {
       *(ret + i) = *str + 32;
     } else {
       *(ret + i) = *str;
     }
   }
-  *(ret + strLen - 1) = '\0';
+  *(ret + strLen) = '\0';
   return ret;
 }
 
 bool parseYesOrNo(const char *str) {
   bool ret = false;
-  printf("---%s---****\n", str);
   char *lowercaseStr = toLowercase(str);
-  printf("----%s----\n", lowercaseStr);
   if (strcmp(lowercaseStr, "yes\n") == 0 || strcmp(lowercaseStr, "y\n") == 0 ||
       strcmp(lowercaseStr, "y") == 0 || strcmp(lowercaseStr, "yes") == 0 ||
       strcmp(lowercaseStr, "\n") == 0) {
@@ -94,7 +92,6 @@ void printOption(NICKNAMEOPTION *nicknameOption) {
   printf("symbol : %d\n", nicknameOption->allowSymbool);
   printf("nickname length : %d\n", nicknameOption->nicknameLength);
   printf("number of nicknames : %d\n", nicknameOption->numberOfNickname);
-  printf("true:%d\n", true);
 }
 
 void askForOption(NICKNAMEOPTION *nicknameOption) {
