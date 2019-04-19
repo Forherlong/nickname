@@ -4,7 +4,7 @@
 #include "nickname.h"
 
 /* flag array length */
-#define FLAG_VAR_ARRAY_LEN 3
+#define FLAG_VAR_ARRAY_LEN 5
 
 const char *welcomeWords = "\n\n\t*** Welcome to nickname ! ***\n";
 const char *warnningWords =
@@ -29,9 +29,11 @@ void getInput(char *str, int length) {
   int oneChar;
   do {
     oneChar = getchar();
-    str[len] = oneChar;
+    *(str + len) = oneChar;
     ++len;
+    /* todo: oneChar check  a....Z */
   } while (oneChar != '\n' && len < length);
+  *(str + len) = '\0';
 }
 
 char *toLowercase(const char *str) {
