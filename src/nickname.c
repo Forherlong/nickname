@@ -1,6 +1,7 @@
 #include "nickname.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 const char dictSymbol[] = "!@#$^&*+_-./";
@@ -14,6 +15,9 @@ const NICKNAMEOPTION NICKNAMEOPTION_DEFAULT = {.nicknameLength = 8,
                                                .allowNumber = false,
                                                .allowSymbool = false,
                                                .saveToFile = false};
+
+void saveNicknameToFile();
+
 /* len [out]
    str1 [in]
    str2 [in]
@@ -117,5 +121,25 @@ char *getNickName(NICKNAMEOPTION *nicknameOption)
     free(tempDict);
   }
 
+  saveNicknameToFile();
+
   return "";
+}
+
+void saveNicknameToFile() {
+  char fileName[21];
+  time_t t = time(NULL);
+	struct tm tm = *localtime(&t);
+  sprintf(fileName, "%d-%d-%d %d-%d-%d.txt", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+  FILE *f = fopen(fileName, "w");
+  if(f == NULL) {
+    strerror(errno);
+    perror("open file error. skip write content to file.\n");
+    return;
+  }
+
+  fprintf(f, "这是我写的第一行");
+
+  fclose(f);
+  return;
 }

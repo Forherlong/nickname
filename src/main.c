@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "nickname.h"
 
 /* flag array length */
@@ -68,33 +69,6 @@ bool parseYesOrNo(const char *str) {
     ret = true;
   }
   free(lowercaseStr);
-  return ret;
-}
-
-bool parseNumber(const char *str, double *num) {
-  bool ret = false;
-  double tempNum = 0;
-  int place = 1; /* 进制 */
-  int strLen = strlen(str);
-  while (*str != '\0') ++str;
-  --str;
-
-  for (int i = strLen - 1; i >= 0; --i) {
-    if (*str >= 48 && *str <= 57) {
-      tempNum = tempNum + place * *str;
-      *num = tempNum;
-      place *= 10;
-    } else if (*str == '\n' && i == 0) {
-      ret = true;
-      return ret;
-    } else if (*str == '\n' && i == strLen - 1) {
-    } else {
-      ret = false;
-      return ret;
-    }
-    --str;
-  }
-  ret = true;
   return ret;
 }
 
@@ -166,24 +140,5 @@ int main(int argc, char **argv) {
     printOption(&nickNameOption);
     getNickName(&nickNameOption);
     fflush(stdout);
-  }
-}
-
-int back_f(int argc) {}
-
-void testLowercase() {
-  char *str = "Yes\n";
-  char *lowercaseStr = toLowercase(str);
-  printf("%s\n", lowercaseStr);
-  if (strcmp(lowercaseStr, "yes") == 0) {
-    printf("1. true---yes  ");
-  }
-
-  if (strcmp(lowercaseStr, "yes\n") == 0) {
-    printf("2. true  ");
-  }
-
-  if (strcmp("\n", "\n") == 0) {
-    printf("3. true  ");
   }
 }
