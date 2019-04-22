@@ -37,7 +37,7 @@ void getInput(char *str, int length) {
   } while (oneChar != '\n' && len < length);
   if (len < length) {
     *(str + len) = '\0';
-  }else {
+  } else {
     *(str + len - 1) = '\0';
   }
 
@@ -73,24 +73,26 @@ bool parseYesOrNo(const char *str) {
 
 bool parseNumber(const char *str, double *num) {
   bool ret = false;
-  double tempNum = 1;
+  double tempNum = 0;
   int place = 1; /* 进制 */
   int strLen = strlen(str);
   while (*str != '\0') ++str;
+  --str;
 
-  for (int i = strLen; i >= 0; --i) {
+  for (int i = strLen - 1; i >= 0; --i) {
     if (*str >= 48 && *str <= 57) {
       tempNum = tempNum + place * *str;
       *num = tempNum;
-    } else if (*str == '\n') {
+      place *= 10;
+    } else if (*str == '\n' && i == 0) {
       ret = true;
       return ret;
+    } else if (*str == '\n' && i == strLen - 1) {
     } else {
       ret = false;
       return ret;
     }
-    ++str;
-    place *= 10;
+    --str;
   }
   ret = true;
   return ret;
@@ -117,11 +119,11 @@ void askForOption(NICKNAMEOPTION *nicknameOption) {
   fflush(stdout);
   getInput(upper, FLAG_VAR_ARRAY_LEN);
 
-  printf("Do you want number?%s", constYESOrNo);
+  printf("Do you want numbers?%s", constYESOrNo);
   fflush(stdout);
   getInput(number, FLAG_VAR_ARRAY_LEN);
 
-  printf("Do you want symbol(!@#$^&*+_-./)?%s", constYESOrNo);
+  printf("Do you want symbols(!@#$^&*+_-./)?%s", constYESOrNo);
   fflush(stdout);
   getInput(symbol, FLAG_VAR_ARRAY_LEN);
 
@@ -143,14 +145,14 @@ void askForOption(NICKNAMEOPTION *nicknameOption) {
   nicknameOption->allowSymbool = parseYesOrNo(symbol);
   nicknameOption->saveToFile = parseYesOrNo(saveToFile);
 
-  double nicknameLength_ = nicknameOption->nicknameLength;
-  if (parseNumber(nicknameLength, &nicknameLength_)) {
-    nicknameOption->nicknameLength = nicknameLength_;
+  int tempLength = atoi(nicknameLength);
+  if ( tempLength != 0) {
+    nicknameOption->nicknameLength = tempLength;
   }
 
-  double numberOfNickname_ = nicknameOption->numberOfNickname;
-  if (parseNumber(numberOfNickname, &numberOfNickname_)) {
-    nicknameOption->numberOfNickname = numberOfNickname_;
+  int tempNumber = atoi(numberOfNickname);
+  if (tempNumber != 0) {
+    nicknameOption->numberOfNickname = tempNumber;
   }
 }
 

@@ -109,9 +109,8 @@ char *getNickName(NICKNAMEOPTION *nicknameOption)
     {
       printf("%c", tempDict[rand() % len]);
     }
+    printf("\n");
   }
-
-  printf("\n");
 
   if (tempDict != dictSymbol && tempDict != dictLower && tempDict != dictNumber && tempDict != dictUpper)
   {
