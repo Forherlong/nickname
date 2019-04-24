@@ -26,30 +26,36 @@ void saveNicknameToFile(char **nicknames, int length);
    str2 [in]
    concatenate str1 and str2 then return, len is return string's length
  */
-char *concatenateString(int *len, const char *str1, const char *str2) {
+char *concatenateString(int *len, const char *str1, const char *str2)
+{
   int len1 = 0, len2 = 0, len3 = 0;
-  while (str1[len1] != '\0') {
+  while (str1[len1] != '\0')
+  {
     len1++;
   }
 
-  while (str2[len2] != '\0') {
+  while (str2[len2] != '\0')
+  {
     len2++;
   }
 
   len3 = len1 + len2;
   *len = len3;
   char *ret = (char *)malloc(sizeof(char) * len3);
-  for (int i = 0; i < len1; ++i) {
+  for (int i = 0; i < len1; ++i)
+  {
     ret[i] = str1[i];
   }
-  for (int i = 0; i < len2; ++i) {
+  for (int i = 0; i < len2; ++i)
+  {
     ret[len1 + i] = str2[i];
   }
 
   return ret;
 }
 
-char *getNickName(NICKNAMEOPTION *nicknameOption) {
+char *getNickName(NICKNAMEOPTION *nicknameOption)
+{
   char *tempDict;
   int len = 0;
 
@@ -57,51 +63,77 @@ char *getNickName(NICKNAMEOPTION *nicknameOption) {
   bool upper = nicknameOption->allowUpperChar;
   bool symbol = nicknameOption->allowSymbool;
   bool number = nicknameOption->allowNumber;
-  if (upper && symbol && number) {
+  if (upper && symbol && number)
+  {
     tempDict = concatenateString(
         &len,
         concatenateString(&len, concatenateString(&len, dictLower, dictUpper),
                           dictSymbol),
         dictNumber);
-  } else if (upper && symbol && !number) {
+  }
+  else if (upper && symbol && !number)
+  {
     tempDict = concatenateString(
         &len, concatenateString(&len, dictLower, dictUpper), dictSymbol);
-  } else if (upper && !symbol && number) {
+  }
+  else if (upper && !symbol && number)
+  {
     tempDict = concatenateString(
         &len, concatenateString(&len, dictLower, dictUpper), dictNumber);
-  } else if (!upper && symbol && number) {
+  }
+  else if (!upper && symbol && number)
+  {
     tempDict = concatenateString(
         &len, concatenateString(&len, dictLower, dictSymbol), dictNumber);
-  } else if (!upper && !symbol && number) {
+  }
+  else if (!upper && !symbol && number)
+  {
     tempDict = concatenateString(&len, dictLower, dictNumber);
-  } else if (!upper && symbol && !number) {
+  }
+  else if (!upper && symbol && !number)
+  {
     tempDict = concatenateString(&len, dictLower, dictSymbol);
-  } else if (upper && !symbol && !number) {
+  }
+  else if (upper && !symbol && !number)
+  {
     tempDict = concatenateString(&len, dictLower, dictUpper);
-  } else if (!upper && !symbol && !number) {
+  }
+  else if (!upper && !symbol && !number)
+  {
     tempDict = dictLower;
     len = sizeof(tempDict) / sizeof(tempDict[0]);
-  } else {
+  }
+  else
+  {
     tempDict = dictLower;
     len = sizeof(tempDict) / sizeof(tempDict[0]);
   }
 
-  if(nicknameOption->numberOfNickname > MAX_NICKNAME_NUMBER ) {
-    printf("number of nickname > max_nickname_number, rewrite number with max_nickname_number.\n");
+  if (nicknameOption->numberOfNickname > MAX_NICKNAME_NUMBER)
+  {
+    printf(
+        "number of nickname > max_nickname_number, rewrite number with "
+        "max_nickname_number.\n");
     fflush(stdout);
     nicknameOption->numberOfNickname = MAX_NICKNAME_NUMBER;
   }
-  if(nicknameOption->nicknameLength > MAX_LENGTH_OF_NICKNAME) {
-    printf("nikename length > max_length_of_nickname, rewrite nikename length with max_length_of_nickname.\n");
+  if (nicknameOption->nicknameLength > MAX_LENGTH_OF_NICKNAME)
+  {
+    printf(
+        "nikename length > max_length_of_nickname, rewrite nikename length "
+        "with max_length_of_nickname.\n");
     fflush(stdout);
     nicknameOption->nicknameLength = MAX_LENGTH_OF_NICKNAME;
   }
 
-  char **nicknames = malloc(sizeof(char*) * nicknameOption->numberOfNickname);
+  char **nicknames = malloc(sizeof(char *) * nicknameOption->numberOfNickname);
   srand((unsigned int)time(NULL));
-  for (int number = 0; number < nicknameOption->numberOfNickname; ++number) {
-    char *oneNickname = (char *)malloc(sizeof(char) * (nicknameOption->nicknameLength + 1));
-    for (int length = 0; length < nicknameOption->nicknameLength; ++length) {
+  for (int number = 0; number < nicknameOption->numberOfNickname; ++number)
+  {
+    char *oneNickname =
+        (char *)malloc(sizeof(char) * (nicknameOption->nicknameLength + 1));
+    for (int length = 0; length < nicknameOption->nicknameLength; ++length)
+    {
       *(oneNickname + length) = tempDict[rand() % len];
     }
     *(oneNickname + nicknameOption->nicknameLength) = '\0';
@@ -111,7 +143,8 @@ char *getNickName(NICKNAMEOPTION *nicknameOption) {
   }
 
   if (tempDict != dictSymbol && tempDict != dictLower &&
-      tempDict != dictNumber && tempDict != dictUpper) {
+      tempDict != dictNumber && tempDict != dictUpper)
+  {
     free(tempDict);
   }
 
@@ -120,26 +153,25 @@ char *getNickName(NICKNAMEOPTION *nicknameOption) {
   return "";
 }
 
-void saveNicknameToFile(char **nicknames, int length) {
+void saveNicknameToFile(char **nicknames, int length)
+{
   char fileName[21];
   time_t t = time(NULL);
   struct tm tm = *localtime(&t);
   sprintf(fileName, "%d-%d-%d %d-%d-%d.txt", tm.tm_year + 1900, tm.tm_mon + 1,
           tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
   FILE *f = fopen(fileName, "w");
-  if (f == NULL) {
+  if (f == NULL)
+  {
     strerror(errno);
     perror("open file error. skip write content to file.\n");
     return;
   }
 
-  for (int i = 0; i < length; ++i) {
-    // printf("nickname %d : %s", i + 1, *nicknames++);
+  for (int i = 0; i < length; ++i)
+  {
     fprintf(f, "No.%d %s\n", i + 1, *nicknames++);
-  } 
-
-  
-
+  }
   fclose(f);
   return;
 }

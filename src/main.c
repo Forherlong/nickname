@@ -13,7 +13,8 @@ const char *warnningWords =
 const char *constYESOrNo = " [Y/n] ";
 const char *constYesOrNO = " [y/N] ";
 
-void help() {
+void help()
+{
   printf("usage:\n");
   printf("\t-n: need number,default no number\n");
   printf("\t-u: need uppdercase,default lowercase\n");
@@ -26,33 +27,43 @@ void help() {
 
 bool isWithFlagValue(int argc) { return argc >= 2; }
 
-void getInput(char *str, int length) {
+void getInput(char *str, int length)
+{
   int len = 0;
   int oneChar;
-  do {
+  do
+  {
     oneChar = getchar();
     *(str + len) = oneChar;
     ++len;
     /* todo: oneChar check  a....Z */
     /* read from cmd then clear buffer */
   } while (oneChar != '\n' && len < length);
-  if (len < length) {
+  if (len < length)
+  {
     *(str + len) = '\0';
-  } else {
+  }
+  else
+  {
     *(str + len - 1) = '\0';
   }
 
   fflush(stdin);
 }
 
-char *toLowercase(const char *str) {
+char *toLowercase(const char *str)
+{
   int strLen = strlen(str);
   char *ret =
       (char *)malloc(sizeof(char) * (strLen + 1)); /* todo: free memory */
-  for (int i = 0; i < strLen; ++i, ++str) {
-    if (*str <= 'Z' && *str >= 'A') {
+  for (int i = 0; i < strLen; ++i, ++str)
+  {
+    if (*str <= 'Z' && *str >= 'A')
+    {
       *(ret + i) = *str + 32;
-    } else {
+    }
+    else
+    {
       *(ret + i) = *str;
     }
   }
@@ -60,19 +71,22 @@ char *toLowercase(const char *str) {
   return ret;
 }
 
-bool parseYesOrNo(const char *str) {
+bool parseYesOrNo(const char *str)
+{
   bool ret = false;
   char *lowercaseStr = toLowercase(str);
   if (strcmp(lowercaseStr, "yes\n") == 0 || strcmp(lowercaseStr, "y\n") == 0 ||
       strcmp(lowercaseStr, "y") == 0 || strcmp(lowercaseStr, "yes") == 0 ||
-      strcmp(lowercaseStr, "\n") == 0) {
+      strcmp(lowercaseStr, "\n") == 0)
+  {
     ret = true;
   }
   free(lowercaseStr);
   return ret;
 }
 
-void printOption(NICKNAMEOPTION *nicknameOption) {
+void printOption(NICKNAMEOPTION *nicknameOption)
+{
   printf("uppercase : %d\n", nicknameOption->allowUpperChar);
   printf("number : %d\n", nicknameOption->allowNumber);
   printf("symbol : %d\n", nicknameOption->allowSymbool);
@@ -81,7 +95,8 @@ void printOption(NICKNAMEOPTION *nicknameOption) {
   printf("save to file : %d\n", nicknameOption->saveToFile);
 }
 
-void askForOption(NICKNAMEOPTION *nicknameOption) {
+void askForOption(NICKNAMEOPTION *nicknameOption)
+{
   char upper[FLAG_VAR_ARRAY_LEN], number[FLAG_VAR_ARRAY_LEN],
       symbol[FLAG_VAR_ARRAY_LEN], nicknameLength[FLAG_VAR_ARRAY_LEN],
       numberOfNickname[FLAG_VAR_ARRAY_LEN], saveToFile[FLAG_VAR_ARRAY_LEN];
@@ -120,20 +135,26 @@ void askForOption(NICKNAMEOPTION *nicknameOption) {
   nicknameOption->saveToFile = parseYesOrNo(saveToFile);
 
   int tempLength = atoi(nicknameLength);
-  if ( tempLength != 0) {
+  if (tempLength != 0)
+  {
     nicknameOption->nicknameLength = tempLength;
   }
 
   int tempNumber = atoi(numberOfNickname);
-  if (tempNumber != 0) {
+  if (tempNumber != 0)
+  {
     nicknameOption->numberOfNickname = tempNumber;
   }
 }
 
-int main(int argc, char **argv) {
-  if (isWithFlagValue(argc)) {
+int main(int argc, char **argv)
+{
+  if (isWithFlagValue(argc))
+  {
     /* 1. parse flag value. 2. define option params 3. invoke getNickname() */
-  } else {
+  }
+  else
+  {
     /* 1. ask for option 2. define option params 3. invoke getNickname() */
     NICKNAMEOPTION nickNameOption = NICKNAMEOPTION_DEFAULT;
     askForOption(&nickNameOption);
