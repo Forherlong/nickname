@@ -105,7 +105,7 @@ void askForOption(NICKNAMEOPTION *nicknameOption) {
   fflush(stdout);
   getInput(nicknameLength, FLAG_VAR_ARRAY_LEN);
 
-  printf("How many nicknames do you want? [1~100000] ");
+  printf("How many nicknames do you want? [1~1000] ");
   fflush(stdout);
   getInput(numberOfNickname, FLAG_VAR_ARRAY_LEN);
 
