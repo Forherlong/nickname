@@ -19,7 +19,7 @@ const NICKNAMEOPTION NICKNAMEOPTION_DEFAULT = {.nicknameLength = 8,
                                                .allowSymbool = false,
                                                .saveToFile = false};
 
-void saveNicknameToFile(char **nicknames, int length);
+bool saveNicknameToFile(char **nicknames, int length);
 
 /* len [out]
    str1 [in]
@@ -117,6 +117,7 @@ char *getNickName(NICKNAMEOPTION *nicknameOption)
     fflush(stdout);
     nicknameOption->numberOfNickname = MAX_NICKNAME_NUMBER;
   }
+
   if (nicknameOption->nicknameLength > MAX_LENGTH_OF_NICKNAME)
   {
     printf(
@@ -139,7 +140,6 @@ char *getNickName(NICKNAMEOPTION *nicknameOption)
     *(oneNickname + nicknameOption->nicknameLength) = '\0';
     printf("%s\n", oneNickname);
     *(nicknames + number) = oneNickname;
-    printf("\n");
   }
 
   if (tempDict != dictSymbol && tempDict != dictLower &&
@@ -147,25 +147,31 @@ char *getNickName(NICKNAMEOPTION *nicknameOption)
   {
     free(tempDict);
   }
-
-  saveNicknameToFile(nicknames, nicknameOption->numberOfNickname);
-
+  
+  if(nicknameOption->saveToFile) {
+    bool saveOk = saveNicknameToFile(nicknames, nicknameOption->numberOfNickname);
+    if(!saveOk) {
+      printf("save nicknames to file failed.");
+    }
+  }
+  
   return "";
 }
 
-void saveNicknameToFile(char **nicknames, int length)
+bool saveNicknameToFile(char **nicknames, int length)
 {
-  char fileName[21];
+  /* todo: free memory */
+  char fileName[28];
   time_t t = time(NULL);
   struct tm tm = *localtime(&t);
-  sprintf(fileName, "%d-%d-%d %d-%d-%d.txt", tm.tm_year + 1900, tm.tm_mon + 1,
+  sprintf(fileName, "%d-%d-%d_%dh-%dmin-%dsec.txt", tm.tm_year + 1900, tm.tm_mon + 1,
           tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
   FILE *f = fopen(fileName, "w");
   if (f == NULL)
   {
     strerror(errno);
     perror("open file error. skip write content to file.\n");
-    return;
+    return false;
   }
 
   for (int i = 0; i < length; ++i)
@@ -173,5 +179,5 @@ void saveNicknameToFile(char **nicknames, int length)
     fprintf(f, "No.%d %s\n", i + 1, *nicknames++);
   }
   fclose(f);
-  return;
+  return true;
 }
