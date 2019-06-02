@@ -7,177 +7,139 @@
 #define MAX_LENGTH_OF_NICKNAME 50
 #define MAX_NICKNAME_NUMBER 1000
 
-const char dictSymbol[] = "!@#$^&*+_-./";
-const char dictLower[] = "abcdefghijklmnopqrstuvwxyz";
-const char dictUpper[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const char dictNumber[] = "1234567890";
+const char *dictSymbol = "!@#$^&*+_-./";
+const char *dictLower = "abcdefghijklmnopqrstuvwxyz";
+const char *dictUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const char *dictNumber = "1234567890";
 
-const NICKNAMEOPTION NICKNAMEOPTION_DEFAULT = {.nicknameLength = 8,
-                                               .numberOfNickname = 1,
-                                               .allowUpperChar = false,
-                                               .allowNumber = false,
-                                               .allowSymbool = false,
-                                               .saveToFile = false};
+const NICKNAMEOPTION NICKNAMEOPTION_DEFAULT = { .nicknameLength = 8,
+						.numberOfNickname = 1,
+						.allowUpperChar = false,
+						.allowNumber = false,
+						.allowSymbool = false,
+						.allowLowerChar = false,
+						.saveToFile = false };
 
 bool saveNicknameToFile(char **nicknames, int length);
 
-/* len [out]
-   str1 [in]
-   str2 [in]
-   concatenate str1 and str2 then return, len is return string's length
- */
-char *concatenateString(int *len, const char *str1, const char *str2)
+/* 根据 4 个布尔值计算对应字符串拼接在一起后长度 */
+int wanted_dic_len(bool wantNum, bool wantUpp, bool wantSym, bool wantLow)
 {
-  int len1 = 0, len2 = 0, len3 = 0;
-  while (str1[len1] != '\0')
-  {
-    len1++;
-  }
+	int destlen = 0;
+	if (wantNum == true) {
+		destlen += strlen(dictNumber);
+	}
 
-  while (str2[len2] != '\0')
-  {
-    len2++;
-  }
+	if (wantUpp == true) {
+		destlen += strlen(dictUpper);
+	}
 
-  len3 = len1 + len2;
-  *len = len3;
-  char *ret = (char *)malloc(sizeof(char) * len3);
-  for (int i = 0; i < len1; ++i)
-  {
-    ret[i] = str1[i];
-  }
-  for (int i = 0; i < len2; ++i)
-  {
-    ret[len1 + i] = str2[i];
-  }
+	if (wantSym == true) {
+		destlen += strlen(dictSymbol);
+	}
 
-  return ret;
+	if (wantLow == true) {
+		destlen += strlen(dictLower);
+	}
+	return destlen;
 }
 
-char *getNickName(NICKNAMEOPTION *nicknameOption)
+/* 根据 4 个布尔值判断对应的字符串是否加入到返回结果里 
+	 第一个参数调用时传入 NULL 
+	 调用完函数后 wantedDict 被赋予拼接好的字符串，使用完 wantedDict 后需要手动 free(wantedDict) */
+int conc_wanted_dic(char **wantedDict, bool wantNum, bool wantUpp, bool wantSym,
+		    bool wantLow)
 {
-  char *tempDict;
-  int len = 0;
+	*wantedDict = NULL;
+	/* + 1 存储 '\0' */
+	int destlen = wanted_dic_len(wantNum, wantUpp, wantSym, wantLow) + 1;
+	*wantedDict = malloc(sizeof(char) * destlen);
+	/* 即使 bool 值都是 false wantedDict 也没有垃圾数据 */
+	memset(*wantedDict, '\0', destlen);
+	if (wantNum == true) {
+		strcat(*wantedDict, dictNumber);
+	}
 
-  /* 选择字典 */
-  bool upper = nicknameOption->allowUpperChar;
-  bool symbol = nicknameOption->allowSymbool;
-  bool number = nicknameOption->allowNumber;
-  if (upper && symbol && number)
-  {
-    tempDict = concatenateString(
-        &len,
-        concatenateString(&len, concatenateString(&len, dictLower, dictUpper),
-                          dictSymbol),
-        dictNumber);
-  }
-  else if (upper && symbol && !number)
-  {
-    tempDict = concatenateString(
-        &len, concatenateString(&len, dictLower, dictUpper), dictSymbol);
-  }
-  else if (upper && !symbol && number)
-  {
-    tempDict = concatenateString(
-        &len, concatenateString(&len, dictLower, dictUpper), dictNumber);
-  }
-  else if (!upper && symbol && number)
-  {
-    tempDict = concatenateString(
-        &len, concatenateString(&len, dictLower, dictSymbol), dictNumber);
-  }
-  else if (!upper && !symbol && number)
-  {
-    tempDict = concatenateString(&len, dictLower, dictNumber);
-  }
-  else if (!upper && symbol && !number)
-  {
-    tempDict = concatenateString(&len, dictLower, dictSymbol);
-  }
-  else if (upper && !symbol && !number)
-  {
-    tempDict = concatenateString(&len, dictLower, dictUpper);
-  }
-  else if (!upper && !symbol && !number)
-  {
-    tempDict = dictLower;
-    len = sizeof(tempDict) / sizeof(tempDict[0]);
-  }
-  else
-  {
-    tempDict = dictLower;
-    len = sizeof(tempDict) / sizeof(tempDict[0]);
-  }
+	if (wantUpp == true) {
+		strcat(*wantedDict, dictUpper);
+	}
 
-  if (nicknameOption->numberOfNickname > MAX_NICKNAME_NUMBER)
-  {
-    printf(
-        "number of nickname > max_nickname_number, rewrite number with "
-        "max_nickname_number.\n");
-    fflush(stdout);
-    nicknameOption->numberOfNickname = MAX_NICKNAME_NUMBER;
-  }
+	if (wantSym == true) {
+		strcat(*wantedDict, dictSymbol);
+	}
 
-  if (nicknameOption->nicknameLength > MAX_LENGTH_OF_NICKNAME)
-  {
-    printf(
-        "nikename length > max_length_of_nickname, rewrite nikename length "
-        "with max_length_of_nickname.\n");
-    fflush(stdout);
-    nicknameOption->nicknameLength = MAX_LENGTH_OF_NICKNAME;
-  }
+	if (wantLow == true) {
+		strcat(*wantedDict, dictLower);
+	}
+	return SUCCESS;
+}
 
-  char **nicknames = malloc(sizeof(char *) * nicknameOption->numberOfNickname);
-  srand((unsigned int)time(NULL));
-  for (int number = 0; number < nicknameOption->numberOfNickname; ++number)
-  {
-    char *oneNickname =
-        (char *)malloc(sizeof(char) * (nicknameOption->nicknameLength + 1));
-    for (int length = 0; length < nicknameOption->nicknameLength; ++length)
-    {
-      *(oneNickname + length) = tempDict[rand() % len];
-    }
-    *(oneNickname + nicknameOption->nicknameLength) = '\0';
-    printf("%s\n", oneNickname);
-    *(nicknames + number) = oneNickname;
-  }
+/* 生成一个 nickname 
+	 onenn 需要传入 NULL，调用函数后 onenn 被赋值，使用后需要手动 free(onenn) */
+void pickOneNickname(char *onenn, int nnlen, char *wantedDict)
+{
+	int i;
+	onenn = NULL;
+	int wantedDictLen = strlen(wantedDict);
+	srand((unsigned int)time(NULL));
 
-  if (tempDict != dictSymbol && tempDict != dictLower &&
-      tempDict != dictNumber && tempDict != dictUpper)
-  {
-    free(tempDict);
-  }
-  
-  if(nicknameOption->saveToFile) {
-    bool saveOk = saveNicknameToFile(nicknames, nicknameOption->numberOfNickname);
-    if(!saveOk) {
-      printf("save nicknames to file failed.");
-    }
-  }
-  
-  return "";
+	/* + 1 存储 '\0' */
+	onenn = malloc(sizeof(char) * (nnlen + 1));
+
+	for (i = 0; i < nnlen; ++i) {
+		*(onenn + i) = wantedDict[rand() % wantedDictLen];
+	}
+	*(onenn + nnlen) = '\0';
+}
+
+void printnns(char **nns, int nnslen)
+{
+	int i;
+	for (i = 0; i < nnslen; ++i) {
+		printf("%s\n", *(nns + i));
+	}
+}
+
+/* generate nickname. 选择组成昵称的成员，不选择默认使用数字 + 
+	 大写英文字母 */
+int nickname(NICKNAMEOPTION *nno)
+{
+	int i;
+	bool wantNum = nno->allowNumber;
+	bool wantUpp = nno->allowUpperChar;
+	bool wantSym = nno->allowSymbool;
+	bool wantLow = nno->allowLowerChar;
+
+	/* nn 元素集合 */
+	char *wantedDict = NULL;
+	conc_wanted_dic(&wantedDict, wantNum, wantUpp, wantSym, wantLow);
+
+	/* +1 存储 '\0' */
+	char **nns = malloc(sizeof(char *) * (nno->numberOfNickname + 1));
+	for (i = 0; i < nno->numberOfNickname; ++i) {
+		pickOneNickname(*(nns + i), nno->nicknameLength, wantedDict);
+	}
+	*(nns + nno->numberOfNickname) = '\0';
+	printnns(nns, nno->numberOfNickname + 1);
 }
 
 bool saveNicknameToFile(char **nicknames, int length)
 {
-  /* todo: free memory */
-  char fileName[28];
-  time_t t = time(NULL);
-  struct tm tm = *localtime(&t);
-  sprintf(fileName, "%d-%d-%d_%dh-%dmin-%dsec.txt", tm.tm_year + 1900, tm.tm_mon + 1,
-          tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-  FILE *f = fopen(fileName, "w");
-  if (f == NULL)
-  {
-    strerror(errno);
-    perror("open file error. skip write content to file.\n");
-    return false;
-  }
+	/* todo: free memory */
+	char fileName[28];
+	time_t t = time(NULL);
+	struct tm tm = *localtime(&t);
+	sprintf(fileName, "%d-%d-%d_%dh-%dmin-%dsec.txt", tm.tm_year + 1900,
+		tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+	FILE *f = fopen(fileName, "w");
+	if (f == NULL) {
+		perror("open file error. skip write content to file.\n");
+		return false;
+	}
 
-  for (int i = 0; i < length; ++i)
-  {
-    fprintf(f, "No.%d %s\n", i + 1, *nicknames++);
-  }
-  fclose(f);
-  return true;
+	for (int i = 0; i < length; ++i) {
+		fprintf(f, "No.%d %s\n", i + 1, *nicknames++);
+	}
+	fclose(f);
+	return true;
 }

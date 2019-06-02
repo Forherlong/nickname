@@ -1,7 +1,7 @@
 CXX = gcc -g
 
 Obj = nickname
-Src = ./src/main.c ./src/nickname.h ./src/nickname.c
+Src = ./src/error_code.h ./src/main.c ./src/nickname.h ./src/nickname.c
 
 $(Obj) : $(Src)
 	$(CXX) -o $@ $^

@@ -1,5 +1,6 @@
 #ifndef __NICKNAME_H__
 #include <stdbool.h>
+#include "error_code.h"
 
 typedef struct _NICKNAMEOPTION {
   int nicknameLength;
@@ -7,8 +8,9 @@ typedef struct _NICKNAMEOPTION {
   bool allowUpperChar;
   bool allowNumber;
   bool allowSymbool;
+  bool allowLowerChar;
   bool saveToFile;
 } NICKNAMEOPTION;
 extern const NICKNAMEOPTION NICKNAMEOPTION_DEFAULT;
-char* getNickName(NICKNAMEOPTION*);
+int nickname(NICKNAMEOPTION *nno);
 #endif
