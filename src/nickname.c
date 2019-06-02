@@ -76,20 +76,19 @@ int conc_wanted_dic(char **wantedDict, bool wantNum, bool wantUpp, bool wantSym,
 
 /* 生成一个 nickname 
 	 onenn 需要传入 NULL，调用函数后 onenn 被赋值，使用后需要手动 free(onenn) */
-void pickOneNickname(char *onenn, int nnlen, char *wantedDict)
+void pickOneNickname(char **onenn, int nnlen, char *wantedDict)
 {
 	int i;
-	onenn = NULL;
+	*onenn = NULL;
 	int wantedDictLen = strlen(wantedDict);
-	srand((unsigned int)time(NULL));
 
 	/* + 1 存储 '\0' */
-	onenn = malloc(sizeof(char) * (nnlen + 1));
+	*onenn = malloc(sizeof(char) * (nnlen + 1));
 
 	for (i = 0; i < nnlen; ++i) {
-		*(onenn + i) = wantedDict[rand() % wantedDictLen];
+		*(*onenn + i) = wantedDict[rand() % wantedDictLen];
 	}
-	*(onenn + nnlen) = '\0';
+	*(*onenn + nnlen) = '\0';
 }
 
 void printnns(char **nns, int nnslen)
@@ -109,6 +108,8 @@ int nickname(NICKNAMEOPTION *nno)
 	bool wantUpp = nno->allowUpperChar;
 	bool wantSym = nno->allowSymbool;
 	bool wantLow = nno->allowLowerChar;
+	/* 全局调用一次，否则随机数种子都是当前时间，可能导致随机数相同 */
+	srand((unsigned int)time(NULL));
 
 	/* nn 元素集合 */
 	char *wantedDict = NULL;
@@ -117,10 +118,12 @@ int nickname(NICKNAMEOPTION *nno)
 	/* +1 存储 '\0' */
 	char **nns = malloc(sizeof(char *) * (nno->numberOfNickname + 1));
 	for (i = 0; i < nno->numberOfNickname; ++i) {
-		pickOneNickname(*(nns + i), nno->nicknameLength, wantedDict);
+		pickOneNickname(&*(nns + i), nno->nicknameLength, wantedDict);
 	}
 	*(nns + nno->numberOfNickname) = '\0';
-	printnns(nns, nno->numberOfNickname + 1);
+	printnns(nns, nno->numberOfNickname);
+
+	free(wantedDict);
 }
 
 bool saveNicknameToFile(char **nicknames, int length)
