@@ -123,6 +123,7 @@ int nickname(NICKNAMEOPTION *nno)
 	*(nns + nno->numberOfNickname) = '\0';
 	printnns(nns, nno->numberOfNickname);
 
+	/* free memory */
 	free(wantedDict);
 	for (i = 0; i < nno->numberOfNickname; ++i) {
 		free(*(nns + i));
@@ -132,7 +133,6 @@ int nickname(NICKNAMEOPTION *nno)
 
 bool saveNicknameToFile(char **nicknames, int length)
 {
-	/* todo: free memory */
 	char fileName[28];
 	time_t t = time(NULL);
 	struct tm tm = *localtime(&t);
