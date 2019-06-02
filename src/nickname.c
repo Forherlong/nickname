@@ -124,6 +124,10 @@ int nickname(NICKNAMEOPTION *nno)
 	printnns(nns, nno->numberOfNickname);
 
 	free(wantedDict);
+	for (i = 0; i < nno->numberOfNickname; ++i) {
+		free(*(nns + i));
+	}
+	free(nns);
 }
 
 bool saveNicknameToFile(char **nicknames, int length)
