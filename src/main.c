@@ -91,39 +91,69 @@ void printOption(NICKNAMEOPTION *nicknameOption)
 	printf("save to file : %d\n", nicknameOption->saveToFile);
 }
 
-void askForOption(NICKNAMEOPTION *nicknameOption)
+void welcomeAndWarnning()
+{
+	printf("%s\n", welcomeWords);
+	printf("%s\n", warnningWords);	
+}
+
+void askUppercase(char *upper)
+{
+	printf("Do you want uppercase letters?%s", constYESOrNo);
+	fflush(stdout);
+	getInput(upper, FLAG_VAR_ARRAY_LEN);
+}
+
+void askNumber(char *number)
+{
+	printf("Do you want numbers?%s", constYESOrNo);
+	fflush(stdout);
+	getInput(number, FLAG_VAR_ARRAY_LEN);
+}
+
+void askSymbol(char *symbol)
+{
+	printf("Do you want symbols(!@#$^&*+_-./)?%s", constYESOrNo);
+	fflush(stdout);
+	getInput(symbol, FLAG_VAR_ARRAY_LEN);
+}
+
+void askNnl(char *nicknameLength)
+{
+	printf("How long do you want a nickname? [1~50] ");
+	fflush(stdout);
+	getInput(nicknameLength, FLAG_VAR_ARRAY_LEN);
+}
+
+void askSaveToFile(char *saveToFile)
+{
+	printf("Do you want to save nicknames to file?%s", constYesOrNO);
+	fflush(stdout);
+	getInput(saveToFile, FLAG_VAR_ARRAY_LEN);
+}
+
+void askNumberOfNn(char *numberOfNickname)
+{
+	printf("How many nicknames do you want? [1~1000] ");
+	fflush(stdout);
+	getInput(numberOfNickname, FLAG_VAR_ARRAY_LEN);
+}
+
+/* rewrite nicknameOption value by user's desire */
+void customOption(NICKNAMEOPTION *nicknameOption)
 {
 	char upper[FLAG_VAR_ARRAY_LEN], number[FLAG_VAR_ARRAY_LEN],
 		symbol[FLAG_VAR_ARRAY_LEN], nicknameLength[FLAG_VAR_ARRAY_LEN],
 		numberOfNickname[FLAG_VAR_ARRAY_LEN],
 		saveToFile[FLAG_VAR_ARRAY_LEN];
 
-	printf("%s\n", welcomeWords);
-	printf("%s\n", warnningWords);
-
-	printf("Do you want uppercase letters?%s", constYESOrNo);
-	fflush(stdout);
-	getInput(upper, FLAG_VAR_ARRAY_LEN);
-
-	printf("Do you want numbers?%s", constYESOrNo);
-	fflush(stdout);
-	getInput(number, FLAG_VAR_ARRAY_LEN);
-
-	printf("Do you want symbols(!@#$^&*+_-./)?%s", constYESOrNo);
-	fflush(stdout);
-	getInput(symbol, FLAG_VAR_ARRAY_LEN);
-
-	printf("How long do you want a nickname? [1~50] ");
-	fflush(stdout);
-	getInput(nicknameLength, FLAG_VAR_ARRAY_LEN);
-
-	printf("How many nicknames do you want? [1~1000] ");
-	fflush(stdout);
-	getInput(numberOfNickname, FLAG_VAR_ARRAY_LEN);
-
-	printf("Do you want to save nicknames to file?%s", constYesOrNO);
-	fflush(stdout);
-	getInput(saveToFile, FLAG_VAR_ARRAY_LEN);
+	welcomeAndWarnning();
+	askUppercase(upper);
+	askNumber(number);
+	askSymbol(symbol);
+	askNnl(nicknameLength);
+	askNumberOfNn(numberOfNickname);
+	askSaveToFile(saveToFile);
 
 	/* rewrite option value */
 	nicknameOption->allowUpperChar = parseYesOrNo(upper);
@@ -149,7 +179,7 @@ int main(int argc, char **argv)
 	} else {
 		/* 1. ask for option 2. define option params 3. invoke getNickname() */
 		NICKNAMEOPTION nickNameOption = NICKNAMEOPTION_DEFAULT;
-		askForOption(&nickNameOption);
+		customOption(&nickNameOption);
 		printOption(&nickNameOption);
 		nickname(&nickNameOption);
 		fflush(stdout);
